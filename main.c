@@ -16,7 +16,7 @@
 #define MEMINFO_SRECLAIMABLE "SReclaimable:"
 #define PROCPATHLEN 64
 
-#define DEFAULT_LIMIT 95
+#define DEFAULT_LIMIT 93
 
 static struct option long_options[] = {
     { "limit", required_argument, NULL, 'l' },
