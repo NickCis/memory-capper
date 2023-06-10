@@ -1,0 +1,13 @@
+[Unit]
+Description=Memory Capper
+Documentation=https://github.com/NickCis/memory-capper
+
+[Service]
+ExecStart=/usr/bin/memory-capper
+# restart the process if it exits prematurely
+Restart=on-failure
+StartLimitBurst=3
+StartLimitInterval=60s
+
+[Install]
+WantedBy=multi-user.target
