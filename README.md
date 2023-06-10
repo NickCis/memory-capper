@@ -18,7 +18,7 @@ autoreconf: running: /usr/bin/autoconf --force
 autoreconf: configure.ac: not using Autoheader
 autoreconf: running: automake --add-missing --copy --force-missing
 autoreconf: Leaving directory '.'
-$ ./configure
+$ ./configure --prefix=/usr
 checking for a BSD-compatible install... /usr/bin/install -c
 checking whether build environment is sane... yes
 checking for a race-free mkdir -p... /usr/bin/mkdir -p
@@ -37,9 +37,25 @@ checking for gcc option to enable C11 features... none needed
 checking whether gcc understands -c and -o together... yes
 checking whether make supports the include directive... yes (GNU style)
 checking dependency style of gcc... gcc3
+checking whether make sets $(MAKE)... (cached) yes
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking if systemd is your init... yes
+checking for systemd/sd-daemon.h... yes
+checking for sd_listen_fds in -lsystemd-daemon... no
 checking that generated files are newer than configure... done
 configure: creating ./config.status
 config.status: creating Makefile
+config.status: creating memory-capper.service
 config.status: executing depfiles commands
 $ make
 ```
