@@ -1,3 +1,4 @@
+_buildfolder=memory-capper-build
 pkgname=memory-capper
 pkgver=v1.0.0
 pkgrel=1
@@ -7,16 +8,16 @@ license=('MIT')
 url='http://github.com/nickcis/memory-capper/'
 depends=()
 makedepends=('automake' 'libtool' 'gcc' 'sed')
-source=("memory-capper::git+https://github.com/nickcis/memory-capper.git")
+source=("$_buildfolder::git+https://github.com/nickcis/memory-capper.git")
 sha256sums=('SKIP')
 
 pkgver() {
-    cd "$srcdir/memory-capper"
+    cd "$srcdir/$_buildfolder"
     git log --format="%H" -n 1
 }
 
 build() {
-    cd "$srcdir/memory-capper"
+    cd "$srcdir/$_buildfolder"
     ./autogen.sh
     ./configure --prefix=/usr \
         --sysconfdir=/etc \
@@ -24,7 +25,7 @@ build() {
 }
 
 package() {
-    cd "$srcdir/memory-capper"
+    cd "$srcdir/$_buildfolder"
     make DESTDIR="${pkgdir}" install
 }
 
