@@ -4,8 +4,7 @@ AC_INIT([memory-capper], [1.0])
 AC_CONFIG_SRCDIR([main.c])
 
 # See https://www.gnu.org/software/automake/manual/html_node/Requirements.html
-AC_CONFIG_FILES([Makefile
-                 memory-capper.service])
+AC_CONFIG_FILES([Makefile])
 
 # Store the auxiliary build tools (e.g., install-sh, config.sub, config.guess)
 # in this dir (build-aux)
@@ -26,8 +25,6 @@ m4_include([m4/features.m4])
 m4_include([m4/systemd.m4])
 
 AX_AVAILABLE_SYSTEMD()
-AM_CONDITIONAL(CONFIG_SYSTEMD_INIT, [test x"$systemdisinit" = xy])
-AM_CONDITIONAL(CONFIG_SYSTEMD_DEV, [test x"$systemddev" = xy])
 
 # Generate the output
 AC_OUTPUT

@@ -16,28 +16,36 @@
 #define MEMINFO_SRECLAIMABLE "SReclaimable:"
 #define PROCPATHLEN 64
 
-#define DEFAULT_LIMIT 93
+#define DEFAULT_RAM_LIMIT 93
+#define DEFAULT_SWAP_LIMIT 93
 
 static struct option long_options[] = {
-    { "limit", required_argument, NULL, 'l' },
+    { "ram", required_argument, NULL, 'r' },
+    { "swap", required_argument, NULL, 's' },
     { "help", no_argument, NULL, 'h' },
     { NULL, 0, NULL, 0 },
 };
 
-void read_arguments(int argc, char* argv[], int* limit) {
+void read_arguments(int argc, char* argv[], int* ram_limit, int* swap_limit) {
     char ch;
-    *limit = DEFAULT_LIMIT;
+    *ram_limit = DEFAULT_RAM_LIMIT;
 
-    while ((ch = getopt_long(argc, argv, "l:h", long_options, NULL)) != -1) {
+    while ((ch = getopt_long(argc, argv, "r:s:h", long_options, NULL)) != -1) {
         switch (ch) {
-            case 'l':
-                *limit = strtoul(optarg, NULL, 10);
-                if (*limit < 1 && 99 < *limit)
-                    *limit = DEFAULT_LIMIT;
+            case 'r':
+                *ram_limit = strtoul(optarg, NULL, 10);
+                if (*ram_limit < 1 && 99 < *ram_limit)
+                    *ram_limit = DEFAULT_RAM_LIMIT;
+                break;
+
+            case 's':
+                *swap_limit = strtoul(optarg, NULL, 10);
+                if (*swap_limit < 1 && 99 < *swap_limit)
+                    *swap_limit = DEFAULT_SWAP_LIMIT;
                 break;
 
             case 'h':
-                printf("%s [-l | --limit <limit>] [-h | --help]\n", argv[0]);
+                printf("%s [-r | --ram <limit>] [-s | --swap <limit>] [-h | --help]\n", argv[0]);
                 exit(1);
                 break;
 
@@ -127,13 +135,17 @@ int main(int argc, char* argv[]) {
     long cached;
     long used;
     long current;
+    long total_swap;
+    long used_swap;
+    long current_swap;
     char datetime[sizeof("YYYY-MM-DD HH:mm:ss")] = {0};
     time_t t;
     struct tm* tm_info;
     char path[PROCPATHLEN] = {0};
-    int limit;
+    int ram_limit;
+    int swap_limit;
 
-    read_arguments(argc, argv, &limit);
+    read_arguments(argc, argv, &ram_limit, &swap_limit);
 
     for (;;) {
         if (sysinfo(&info) < 0)
@@ -144,14 +156,17 @@ int main(int argc, char* argv[]) {
         cached = get_cached();
         used = total - to_unit(info.freeram) - to_unit(info.bufferram) - cached;
         current = used * 100 / total;
+        total_swap = to_unit(info.totalswap);
+        used_swap  = to_unit(info.totalswap - info.freeswap);
+        current_swap = used_swap * 100 / total_swap;
 #undef to_unit
 
         t = time(NULL);
         tm_info = localtime(&t);
         strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", tm_info);
-        printf("[%s] Memory %ld%% (%ld / %ld)\n", datetime, current, used, total);
+        printf("[%s] Memory %ld%% (%ld / %ld) Swap %ld%% (%ld / %ld)\n", datetime, current, used, total, current_swap, used_swap, total_swap);
 
-        if (current > limit) {
+        if (current > ram_limit || current_swap > swap_limit) {
             DIR* dir = opendir(PROC);
             long resident;
             long max_resident = 0;
@@ -186,7 +201,7 @@ int main(int argc, char* argv[]) {
                 t = time(NULL);
                 tm_info = localtime(&t);
                 strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", tm_info);
-                printf("[%s] Kill %s (pid %d) %ld (> %d)\n", datetime, path, max_pid, max_resident, limit);
+                printf("[%s] Kill %s (pid %d) %ld [ram: %ld > %d] [swap: %ld > %d]\n", datetime, path, max_pid, max_resident, current, ram_limit, current_swap, swap_limit);
                 if (max_pid)
                     kill(max_pid, SIGTERM);
             }

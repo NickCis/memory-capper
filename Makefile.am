@@ -23,5 +23,13 @@ enable:
 	systemctl enable funk_rw.socket
 	systemctl enable funk_ro.socket
 
+## https://stackoverflow.com/a/58028204
+SERVICE_SUBS = \
+	s,[@]prefix[@],$(prefix),g
+
+memory-capper.service: memory-capper.service.in
+	sed -e '$(SERVICE_SUBS)' < $< > $@
+
 systemdsystemunitdir = @systemdsystemunitdir@
-systemdsystemunit_DATA = memory-capper.service
+systemdsystemunit_DATA = \
+	memory-capper.service

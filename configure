@@ -649,10 +649,6 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-CONFIG_SYSTEMD_DEV_FALSE
-CONFIG_SYSTEMD_DEV_TRUE
-CONFIG_SYSTEMD_INIT_FALSE
-CONFIG_SYSTEMD_INIT_TRUE
 SYSTEMD_LIBS
 SYSTEMD_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -663,13 +659,6 @@ modulesloaddir
 systemdsystemunitdir
 systemduserunitdir
 systemdisinit
-CONFIG_DIR
-RUNDIR
-SHAREDIR
-LIBDIR
-LIBEXEC
-SBINDIR
-BINDIR
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -2420,7 +2409,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # See https://www.gnu.org/software/automake/manual/html_node/Requirements.html
-ac_config_files="$ac_config_files Makefile memory-capper.service"
+ac_config_files="$ac_config_files Makefile"
 
 
 # Store the auxiliary build tools (e.g., install-sh, config.sub, config.guess)
@@ -4390,52 +4379,6 @@ fi
 
 
 
-# paths.m4 - Macros to help expand configure variables early   -*- Autoconf -*-
-#
-# Copyright (C) 2014 Luis R. Rodriguez <mcgrof@suse.com>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-
-
-
-
-# test "x$prefix" = "xNONE" && prefix=$ac_default_prefix
-# test "x$exec_prefix" = "xNONE" && exec_prefix=$ac_default_prefix
-
-
-BINDIR=`echo $bindir`
-
-
-SBINDIR=`eval echo $sbindir`
-
-
-LIBEXEC=`eval echo $libexec`
-
-
-LIBDIR=`eval echo $libdir`
-
-
-SHAREDIR=`eval echo $prefix/share`
-
-
-RUNDIR="/var/run"
-
-
-CONFIG_DIR=/etc
-
 
 
 ac_header= ac_cache=
@@ -4999,22 +4942,6 @@ else $as_nop
 fi
 
 
- if test x"$systemdisinit" = xy; then
-  CONFIG_SYSTEMD_INIT_TRUE=
-  CONFIG_SYSTEMD_INIT_FALSE='#'
-else
-  CONFIG_SYSTEMD_INIT_TRUE='#'
-  CONFIG_SYSTEMD_INIT_FALSE=
-fi
-
- if test x"$systemddev" = xy; then
-  CONFIG_SYSTEMD_DEV_TRUE=
-  CONFIG_SYSTEMD_DEV_FALSE='#'
-else
-  CONFIG_SYSTEMD_DEV_TRUE='#'
-  CONFIG_SYSTEMD_DEV_FALSE=
-fi
-
 
 # Generate the output
 cat >confcache <<\_ACEOF
@@ -5184,14 +5111,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${CONFIG_SYSTEMD_INIT_TRUE}" && test -z "${CONFIG_SYSTEMD_INIT_FALSE}"; then
-  as_fn_error $? "conditional \"CONFIG_SYSTEMD_INIT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${CONFIG_SYSTEMD_DEV_TRUE}" && test -z "${CONFIG_SYSTEMD_DEV_FALSE}"; then
-  as_fn_error $? "conditional \"CONFIG_SYSTEMD_DEV\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -5762,7 +5681,6 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "memory-capper.service") CONFIG_FILES="$CONFIG_FILES memory-capper.service" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
