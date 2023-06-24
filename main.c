@@ -22,15 +22,21 @@
 static struct option long_options[] = {
     { "ram", required_argument, NULL, 'r' },
     { "swap", required_argument, NULL, 's' },
+    { "non-buffered-stdout", no_argument, NULL, 'b' },
+    { "no-date", no_argument, NULL, 'd' },
+    { "no-tick-log", no_argument, NULL, 't' },
     { "help", no_argument, NULL, 'h' },
     { NULL, 0, NULL, 0 },
 };
 
-void read_arguments(int argc, char* argv[], int* ram_limit, int* swap_limit) {
+void read_arguments(int argc, char* argv[], int* ram_limit, int* swap_limit, int* no_date, int* no_tick_log) {
     char ch;
     *ram_limit = DEFAULT_RAM_LIMIT;
+    *swap_limit = DEFAULT_SWAP_LIMIT;
+    *no_date = 0;
+    *no_tick_log = 0;
 
-    while ((ch = getopt_long(argc, argv, "r:s:h", long_options, NULL)) != -1) {
+    while ((ch = getopt_long(argc, argv, "r:s:bdth", long_options, NULL)) != -1) {
         switch (ch) {
             case 'r':
                 *ram_limit = strtoul(optarg, NULL, 10);
@@ -44,8 +50,20 @@ void read_arguments(int argc, char* argv[], int* ram_limit, int* swap_limit) {
                     *swap_limit = DEFAULT_SWAP_LIMIT;
                 break;
 
+            case 'b':
+                setvbuf(stdout, NULL, _IOLBF, 0);
+                break;
+
+            case 'd':
+                *no_date = 1;
+                break;
+
+            case 't':
+                *no_tick_log = 1;
+                break;
+
             case 'h':
-                printf("%s [-r | --ram <limit>] [-s | --swap <limit>] [-h | --help]\n", argv[0]);
+                printf("%s [-r | --ram <limit>] [-s | --swap <limit>] [-h | --help] [-b | --non-buffered-stdout] [-d | --no-date] [-t | --no-tick-log]\n", argv[0]);
                 exit(1);
                 break;
 
@@ -144,8 +162,10 @@ int main(int argc, char* argv[]) {
     char path[PROCPATHLEN] = {0};
     int ram_limit;
     int swap_limit;
+    int no_date;
+    int no_tick_log;
 
-    read_arguments(argc, argv, &ram_limit, &swap_limit);
+    read_arguments(argc, argv, &ram_limit, &swap_limit, &no_date, &no_tick_log);
 
     for (;;) {
         if (sysinfo(&info) < 0)
@@ -161,10 +181,16 @@ int main(int argc, char* argv[]) {
         current_swap = used_swap * 100 / total_swap;
 #undef to_unit
 
-        t = time(NULL);
-        tm_info = localtime(&t);
-        strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", tm_info);
-        printf("[%s] Memory %ld%% (%ld / %ld) Swap %ld%% (%ld / %ld)\n", datetime, current, used, total, current_swap, used_swap, total_swap);
+        if (!no_tick_log) {
+            if (!no_date) {
+                t = time(NULL);
+                tm_info = localtime(&t);
+                strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", tm_info);
+                printf("[%s] ", datetime);
+            }
+
+            printf("Memory %ld%% (%ld / %ld) Swap %ld%% (%ld / %ld)\n", current, used, total, current_swap, used_swap, total_swap);
+        }
 
         if (current > ram_limit || current_swap > swap_limit) {
             DIR* dir = opendir(PROC);
@@ -198,10 +224,13 @@ int main(int argc, char* argv[]) {
                 snprintf(path, PROCPATHLEN, PROC "/%d/" CMDLINE, max_pid);
                 read_cmdline(path, path, PROCPATHLEN);
 
-                t = time(NULL);
-                tm_info = localtime(&t);
-                strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", tm_info);
-                printf("[%s] Kill %s (pid %d) %ld [ram: %ld > %d] [swap: %ld > %d]\n", datetime, path, max_pid, max_resident, current, ram_limit, current_swap, swap_limit);
+                if (!no_date) {
+                    t = time(NULL);
+                    tm_info = localtime(&t);
+                    strftime(datetime, 20, "%Y-%m-%d %H:%M:%S", tm_info);
+                    printf("[%s] ", datetime);
+                }
+                printf("Kill %s (pid %d) %ld [ram: %ld > %d] [swap: %ld > %d]\n", path, max_pid, max_resident, current, ram_limit, current_swap, swap_limit);
                 if (max_pid)
                     kill(max_pid, SIGTERM);
             }

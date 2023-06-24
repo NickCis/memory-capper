@@ -3,7 +3,7 @@ Description=Memory Capper
 Documentation=https://github.com/NickCis/memory-capper
 
 [Service]
-ExecStart=@bindir@/memory-capper
+ExecStart=@bindir@/memory-capper --non-buffered-stdout --no-date --no-tick-log
 # restart the process if it exits prematurely
 Restart=on-failure
 StartLimitBurst=3
