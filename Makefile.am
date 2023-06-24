@@ -25,11 +25,15 @@ enable:
 
 ## https://stackoverflow.com/a/58028204
 SERVICE_SUBS = \
-	s,[@]prefix[@],$(prefix),g
+	s,[@]prefix[@],$(prefix),g; \
+	s,[@]bindir[@],$(bindir),g
 
 memory-capper.service: memory-capper.service.in
 	sed -e '$(SERVICE_SUBS)' < $< > $@
 
 systemdsystemunitdir = @systemdsystemunitdir@
 systemdsystemunit_DATA = \
+	memory-capper.service
+
+MOSTLYCLEANFILES = \
 	memory-capper.service

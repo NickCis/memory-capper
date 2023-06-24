@@ -3,7 +3,7 @@ Description=Memory Capper
 Documentation=https://github.com/NickCis/memory-capper
 
 [Service]
-ExecStart=@prefix@/bin/memory-capper
+ExecStart=@bindir@/memory-capper
 # restart the process if it exits prematurely
 Restart=on-failure
 StartLimitBurst=3
