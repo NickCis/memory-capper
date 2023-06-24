@@ -13,7 +13,7 @@ sha256sums=('SKIP')
 
 pkgver() {
     cd "$srcdir/$_buildfolder"
-    git log --format="%H" -n 1
+    git log --format="%ad.%h" --date=format:'%Y%m%d%H%M%S' -n 1
 }
 
 build() {
